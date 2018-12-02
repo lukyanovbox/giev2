@@ -16,6 +16,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.ImmutableList;
 
+import static com.google.common.base.Preconditions.checkState;
 import static com.lukyanov.giev.algorithm.Gene.ONE;
 import static com.lukyanov.giev.algorithm.Gene.ZERO;
 import static com.lukyanov.giev.util.CoordinatesExecutor.mathFunctionExecutor;
@@ -104,9 +105,18 @@ public class SimpleGiev2 {
 
 
    private List<Indidvid> evolutionPopulation(List<Indidvid> population) {
+      checkState(population.size() == populationSize,
+            String.format("Actual size is %s", population.size()));
 
       List<Indidvid> intermediatePopulation = generateIntermediatePopulation(population);
+
+      checkState(intermediatePopulation.size() == populationSize,
+            String.format("Actual size is %s", intermediatePopulation.size()));
+
       List<Indidvid> newPopulation = selectAndCrossingOver(intermediatePopulation);
+
+      checkState(newPopulation.size() == populationSize,
+            String.format("Actual size is %s", newPopulation.size()));
 
       return mutate(newPopulation);
    }
@@ -122,7 +132,7 @@ public class SimpleGiev2 {
             .sum();
 
       Map<Indidvid, Double> pIndividMap = population.stream()
-            .map(i -> Pair.of(i, ((maxFValue - i.executeFunctionValue()) / sumFcVal)))
+            .map(i -> Pair.of(i, ((1 + maxFValue - i.executeFunctionValue()) / sumFcVal)))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
 
@@ -134,10 +144,12 @@ public class SimpleGiev2 {
          rouletteMap.put(var, entry.getKey());
       }
 
+      //      checkState(rouletteMap.values().size() == populationSize,
+      //            String.format("Actual size is %s", rouletteMap.size()));
 
 
       List<Indidvid> intermediateIndividList = new ArrayList<>();
-      for (int i = 0; i < rouletteMap.keySet().size(); i++) {
+      for (int i = 0; i < population.size(); i++) {
          double rnd = RandomUtils.nextDouble(0,
                rouletteMap.keySet().stream().max(Comparator.comparing(Double::doubleValue)).get());
          for (Double key : rouletteMap.keySet().stream().sorted().collect(Collectors.toList())) {
@@ -203,9 +215,10 @@ public class SimpleGiev2 {
 
          if (rnd < mutationP) {
 
-            if(RandomUtils.nextInt(0, 2) == 0){
+            if (RandomUtils.nextInt(0, 2) == 0) {
                individ.chromosome1.value = individ.chromosome1.value + 1;
-            } else {
+            }
+            else {
                individ.chromosome2.value = individ.chromosome2.value + 1;
 
             }
@@ -213,36 +226,5 @@ public class SimpleGiev2 {
       }
 
       return population;
-   }
-
-   private List<Gene> binaryToGray(List<Gene> binaryGenes) {
-      List<Gene> grayGenes = new ArrayList<>();
-      grayGenes.add(binaryGenes.get(0));
-      for (int i = 1; i < binaryGenes.size(); i++) {
-         Gene g_1 = binaryGenes.get(i - 1);
-         Gene g = binaryGenes.get(i);
-         if ((g_1 == ONE && g == ZERO) || (g_1 == ZERO && g == ONE)) {
-            grayGenes.add(ONE);
-         }
-         else {
-            grayGenes.add(ZERO);
-         }
-      }
-
-      return grayGenes;
-   }
-
-   private List<Gene> grayToBinary(List<Gene> grayGenes) {
-      List<Gene> binaryGenes = new ArrayList<>();
-      Gene value = grayGenes.get(0);
-      binaryGenes.add(value);
-      for (int i = 1; i < grayGenes.size(); i++) {
-         if (grayGenes.get(i) == ONE) {
-            value = value == ONE ? ZERO : ONE;
-         }
-         binaryGenes.add(value);
-      }
-
-      return binaryGenes;
    }
 }
