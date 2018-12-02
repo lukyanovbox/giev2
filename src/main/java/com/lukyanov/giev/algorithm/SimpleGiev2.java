@@ -25,7 +25,7 @@ import lombok.Getter;
 
 
 @Builder
-public class SimpleGiev1 {
+public class SimpleGiev2 {
 
    private static final int ITEMS_COUNT = 20000;
    final int populationSize;

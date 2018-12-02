@@ -8,7 +8,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import com.lukyanov.giev.algorithm.SimpleGiev1;
+import com.lukyanov.giev.algorithm.SimpleGiev2;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -45,7 +45,7 @@ public class SimpleGievGraphics {
          final double mutationP,
          final double from, final double to) {
 
-      SimpleGiev1 simpleGiev = SimpleGiev1.builder()
+      SimpleGiev2 simpleGiev = SimpleGiev2.builder()
             .generationCount(generationCount)
             .populationSize(populationSize)
             .crossingOverP(crossingOverP)
